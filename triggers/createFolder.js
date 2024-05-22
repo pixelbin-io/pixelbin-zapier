@@ -5,7 +5,7 @@ const subscribeHook = async (z, bundle) => {
 	const eventIds = [];
 
 	const fetchEvents = {
-		url: "https://api.pixelbinz0.de/service/platform/notification/v1.0/events",
+		url: `https://api.pixelbinz0.de/service/platform/notification/v1.0/events`,
 		method: "GET",
 	};
 
@@ -28,13 +28,13 @@ const subscribeHook = async (z, bundle) => {
 
 	try {
 		const webhookConfigResponse = await z.request({
-			url: "https://api.pixelbinz0.de/service/platform/notification/v1.0/webhook-configs",
+			url: `https://api.pixelbinz0.de/service/platform/notification/v1.0/webhook-configs`,
 			method: "POST",
 			body: {
 				events: [...eventIds],
 				isActive: true,
-				name: bundle.inputData.webhookName,
-				secret: bundle.inputData.secret,
+				name: "bundle.inputData.webhookName",
+				secret: "bundle.inputData.secret",
 				url: bundle.targetUrl,
 			},
 		});
@@ -96,6 +96,24 @@ const deletePropertiesRecursive = (obj) => {
 	}
 };
 
+const performList = (z, bundle) => {
+	return [
+		{
+			event: {
+				name: "folder",
+				type: "create",
+				traceId: "c19e8dfc-b94f-4bc5-8725-d3ff361035e1",
+			},
+			payload: {
+				_id: "d8e0394c-2235-422e-bd48-53c4cf1ae0f4",
+				name: "folderName",
+				path: "",
+				isActive: true,
+			},
+		},
+	];
+};
+
 const getDataFromWebHook = async (z, bundle) => {
 	const { PixelbinConfig, PixelbinClient } = require("@pixelbin/admin");
 
@@ -143,7 +161,7 @@ module.exports = {
 	noun: "CreateFolder",
 	display: {
 		label: "Create Folder",
-		description: "Triggers whenever a new folder is created in PixelBin.io.",
+		description: "Triggers when a new folder is created in PixelBin.io.",
 	},
 
 	// `operation` is where the business logic goes.
@@ -173,5 +191,6 @@ module.exports = {
 		performSubscribe: subscribeHook,
 		performUnsubscribe: unsubscribeHook,
 		perform: getDataFromWebHook,
+		performList: performList,
 	},
 };

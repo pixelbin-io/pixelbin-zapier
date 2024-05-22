@@ -5,7 +5,7 @@ const subscribeHook = async (z, bundle) => {
 	const eventIds = [];
 
 	const fetchEvents = {
-		url: "https://api.pixelbinz0.de/service/platform/notification/v1.0/events",
+		url: `https://api.pixelbinz0.de/service/platform/notification/v1.0/events`,
 		method: "GET",
 	};
 
@@ -29,7 +29,7 @@ const subscribeHook = async (z, bundle) => {
 
 	try {
 		const webhookConfigResponse = await z.request({
-			url: "https://api.pixelbinz0.de/service/platform/notification/v1.0/webhook-configs",
+			url: `https://api.pixelbinz0.de/service/platform/notification/v1.0/webhook-configs`,
 			method: "POST",
 			body: {
 				events: [...eventIds],
@@ -51,6 +51,65 @@ const subscribeHook = async (z, bundle) => {
 		z.console.log("Error creating webhook configuration: " + error.message);
 		throw error;
 	}
+};
+
+const performList = (z, bundle) => {
+	return [
+		{
+			event: {
+				name: "file",
+				type: "create",
+				traceId: "8f2937c8-92f7-47c3-a8eb-71c50408fa3d",
+			},
+			payload: {
+				orgId: 7671,
+				type: "file",
+				name: "pb_result.png",
+				path: "",
+				fileId: "pb_result.png",
+				access: "public-read",
+				tags: [],
+				metadata: {
+					source: "direct",
+				},
+				format: "png",
+				assetType: "image",
+				size: 538309,
+				width: 2660,
+				height: 1360,
+				context: {
+					steps: [],
+					req: {
+						headers: {},
+						query: {},
+					},
+					meta: {
+						format: "png",
+						size: 538309,
+						width: 2660,
+						height: 1360,
+						space: "srgb",
+						channels: 4,
+						depth: "uchar",
+						density: 144,
+						isProgressive: false,
+						resolutionUnit: "inch",
+						hasProfile: true,
+						hasAlpha: true,
+						extension: "png",
+						contentType: "image/png",
+						assetType: "image",
+						isImageAsset: true,
+						isAudioAsset: false,
+						isVideoAsset: false,
+						isRawAsset: false,
+						isTransformationSupported: true,
+					},
+				},
+				isOriginal: true,
+			},
+		},
+	];
 };
 
 const unsubscribeHook = (z, bundle) => {
@@ -144,7 +203,7 @@ module.exports = {
 	noun: "CreateFile",
 	display: {
 		label: "Create File",
-		description: "Triggers whenever an image is uploaded to PixelBin.io .",
+		description: "Triggers when an image is uploaded to PixelBin.io .",
 	},
 
 	// `operation` is where the business logic goes.
@@ -173,5 +232,6 @@ module.exports = {
 		performSubscribe: subscribeHook,
 		performUnsubscribe: unsubscribeHook,
 		perform: getDataFromWebHook,
+		performList: performList,
 	},
 };

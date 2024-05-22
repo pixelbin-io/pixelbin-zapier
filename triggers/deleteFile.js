@@ -5,7 +5,7 @@ const subscribeHook = async (z, bundle) => {
 	const eventIds = [];
 
 	const fetchEvents = {
-		url: "https://api.pixelbinz0.de/service/platform/notification/v1.0/events",
+		url: `https://api.pixelbinz0.de/service/platform/notification/v1.0/events`,
 		method: "GET",
 	};
 
@@ -15,7 +15,7 @@ const subscribeHook = async (z, bundle) => {
 		if (response.status === 200) {
 			const temp = [...response.data];
 			const obj = temp.find(
-				(item) => item.name === "folder" && item.type === "delete"
+				(item) => item.name === "file" && item.type === "delete"
 			);
 			eventIds.push(obj._id);
 		} else {
@@ -28,7 +28,7 @@ const subscribeHook = async (z, bundle) => {
 
 	try {
 		const webhookConfigResponse = await z.request({
-			url: "https://api.pixelbinz0.de/service/platform/notification/v1.0/webhook-configs",
+			url: `https://api.pixelbinz0.de/service/platform/notification/v1.0/webhook-configs`,
 			method: "POST",
 			body: {
 				events: [...eventIds],
@@ -50,6 +50,69 @@ const subscribeHook = async (z, bundle) => {
 		z.console.log("Error creating webhook configuration: " + error.message);
 		throw error;
 	}
+};
+
+const performList = (z, bundle) => {
+	return [
+		{
+			event: {
+				name: "file",
+				type: "delete",
+				traceId: "c0fe84e6-bf21-46dc-9030-bb3f98ad46f2",
+			},
+			payload: {
+				_id: "c51338bf-ae85-4161-bfdc-c8456251c0ad",
+				name: "pb_result.png",
+				path: "",
+				fileId: "pb_result.png",
+				format: "png",
+				assetType: "image",
+				access: "public-read",
+				size: 538309,
+				isActive: true,
+				tags: [],
+				metadata: {
+					source: "direct",
+				},
+				url: "https://cdn.pixelbinz0.de/v2/still-bonus-205d85/original/pb_result.png",
+				meta: {},
+				kvStore: [],
+				height: 1360,
+				width: 2660,
+				createdAt: "2024-05-14T13:16:11.423Z",
+				updatedAt: "2024-05-14T13:16:11.423Z",
+				context: {
+					req: {
+						query: {},
+						headers: {},
+					},
+					meta: {
+						size: 538309,
+						depth: "uchar",
+						space: "srgb",
+						width: 2660,
+						format: "png",
+						height: 1360,
+						density: 144,
+						channels: 4,
+						hasAlpha: true,
+						assetType: "image",
+						extension: "png",
+						hasProfile: true,
+						isRawAsset: false,
+						contentType: "image/png",
+						isAudioAsset: false,
+						isImageAsset: true,
+						isVideoAsset: false,
+						isProgressive: false,
+						resolutionUnit: "inch",
+						isTransformationSupported: true,
+					},
+					steps: [],
+				},
+			},
+		},
+	];
 };
 
 const unsubscribeHook = (z, bundle) => {
@@ -143,7 +206,7 @@ module.exports = {
 	noun: "DeleteFile",
 	display: {
 		label: "Delete File",
-		description: "Triggers whenever a file is deleted from PixelBin.io",
+		description: "Triggers when a file is deleted from PixelBin.io",
 	},
 
 	// `operation` is where the business logic goes.
@@ -171,7 +234,7 @@ module.exports = {
 
 		performSubscribe: subscribeHook,
 		performUnsubscribe: unsubscribeHook,
-
 		perform: getDataFromWebHook,
+		performList: performList,
 	},
 };

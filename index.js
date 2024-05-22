@@ -39,9 +39,9 @@ const App = {
 
 	// If you want your creates to show up, you better include it here!
 	creates: {
-		[createReport.key]: createReport,
 		[transform.key]: transform,
 		[upload.key]: upload,
+		[createReport.key]: createReport,
 		// [issueCreate.key]: issueCreate,
 	},
 };

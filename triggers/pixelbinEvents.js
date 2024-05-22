@@ -5,7 +5,7 @@ const subscribeHook = async (z, bundle) => {
 	const eventIds = [];
 
 	const fetchEvents = {
-		url: "https://api.pixelbinz0.de/service/platform/notification/v1.0/events",
+		url: `https://api.pixelbinz0.de/service/platform/notification/v1.0/events`,
 		method: "GET",
 	};
 
@@ -43,7 +43,7 @@ const subscribeHook = async (z, bundle) => {
 
 	try {
 		const webhookConfigResponse = await z.request({
-			url: "https://api.pixelbinz0.de/service/platform/notification/v1.0/webhook-configs",
+			url: `https://api.pixelbinz0.de/service/platform/notification/v1.0/webhook-configs`,
 			method: "POST",
 			body: {
 				events: [...eventIds],
@@ -111,6 +111,136 @@ const deletePropertiesRecursive = (obj) => {
 	}
 };
 
+const performList = (z, bundle) => {
+	return [
+		{
+			event: {
+				name: "file",
+				type: "create",
+				traceId: "8f2937c8-92f7-47c3-a8eb-71c50408fa3d",
+			},
+			payload: {
+				orgId: 7671,
+				type: "file",
+				name: "pb_result.png",
+				path: "",
+				fileId: "pb_result.png",
+				access: "public-read",
+				tags: [],
+				metadata: {
+					source: "direct",
+				},
+				format: "png",
+				assetType: "image",
+				size: 538309,
+				width: 2660,
+				height: 1360,
+				context: {
+					steps: [],
+					req: {
+						headers: {},
+						query: {},
+					},
+					meta: {
+						format: "png",
+						size: 538309,
+						width: 2660,
+						height: 1360,
+						space: "srgb",
+						channels: 4,
+						depth: "uchar",
+						density: 144,
+						isProgressive: false,
+						resolutionUnit: "inch",
+						hasProfile: true,
+						hasAlpha: true,
+						extension: "png",
+						contentType: "image/png",
+						assetType: "image",
+						isImageAsset: true,
+						isAudioAsset: false,
+						isVideoAsset: false,
+						isRawAsset: false,
+						isTransformationSupported: true,
+					},
+				},
+				isOriginal: true,
+			},
+		},
+		{
+			event: {
+				name: "file",
+				type: "delete",
+				traceId: "c0fe84e6-bf21-46dc-9030-bb3f98ad46f2",
+			},
+			payload: {
+				_id: "c51338bf-ae85-4161-bfdc-c8456251c0ad",
+				name: "pb_result.png",
+				path: "",
+				fileId: "pb_result.png",
+				format: "png",
+				assetType: "image",
+				access: "public-read",
+				size: 538309,
+				isActive: true,
+				tags: [],
+				metadata: {
+					source: "direct",
+				},
+				url: "https://cdn.pixelbinz0.de/v2/still-bonus-205d85/original/pb_result.png",
+				meta: {},
+				kvStore: [],
+				height: 1360,
+				width: 2660,
+				createdAt: "2024-05-14T13:16:11.423Z",
+				updatedAt: "2024-05-14T13:16:11.423Z",
+				context: {
+					req: {
+						query: {},
+						headers: {},
+					},
+					meta: {
+						size: 538309,
+						depth: "uchar",
+						space: "srgb",
+						width: 2660,
+						format: "png",
+						height: 1360,
+						density: 144,
+						channels: 4,
+						hasAlpha: true,
+						assetType: "image",
+						extension: "png",
+						hasProfile: true,
+						isRawAsset: false,
+						contentType: "image/png",
+						isAudioAsset: false,
+						isImageAsset: true,
+						isVideoAsset: false,
+						isProgressive: false,
+						resolutionUnit: "inch",
+						isTransformationSupported: true,
+					},
+					steps: [],
+				},
+			},
+		},
+		{
+			event: {
+				name: "folder",
+				type: "create",
+				traceId: "c19e8dfc-b94f-4bc5-8725-d3ff361035e1",
+			},
+			payload: {
+				_id: "d8e0394c-2235-422e-bd48-53c4cf1ae0f4",
+				name: "folderName",
+				path: "",
+				isActive: true,
+			},
+		},
+	];
+};
+
 const getDataFromWebHook = async (z, bundle) => {
 	const { PixelbinConfig, PixelbinClient } = require("@pixelbin/admin");
 
@@ -159,7 +289,7 @@ module.exports = {
 	display: {
 		label: "Storage Monitor",
 		description:
-			"Triggers whenever an image is uploaded or deleted, or a new folder is created in PixelBin.io.",
+			"Triggers when an image is uploaded or deleted, or a new folder is created in PixelBin.io.",
 	},
 
 	// `operation` is where the business logic goes.
@@ -177,9 +307,8 @@ module.exports = {
 			},
 			{
 				key: "secret",
-				required: false,
 				type: "password",
-				type: "string",
+				required: false,
 				helpText: "Provide the secret key for a webhook to be created.",
 			},
 			{
@@ -209,7 +338,7 @@ module.exports = {
 
 		performSubscribe: subscribeHook,
 		performUnsubscribe: unsubscribeHook,
-
 		perform: getDataFromWebHook,
+		performList: performList,
 	},
 };

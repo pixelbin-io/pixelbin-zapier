@@ -7,7 +7,7 @@
 // from the returned response using the `json.` prefix. eg: `{{json.username}}`.
 
 const test = (z, bundle) => {
-	const url = `${process.env.BASE_URL}/service/platform/organization/v1.0/apps/info`;
+	const url = `https://api.pixelbinz0.de/service/platform/organization/v1.0/apps/info`;
 	return z
 		.request({
 			url: url,
@@ -36,7 +36,7 @@ const handleBadResponses = (response, z, bundle) => {
 		// console.log("IN ERROR 2", response);
 		throw new z.errors.Error(
 			// This message is surfaced to the user
-			"The API Key you supplied is incorrect testShantanu",
+			"The API Key you supplied is incorrect ",
 			"AuthenticationError",
 			response
 		);
