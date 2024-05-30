@@ -1,30 +1,39 @@
 const sample = require("../samples/sample_issue");
 
 const perform = async (z, bundle) => {
-	const response = await z.request({
-		url: `https://api.pixelbinz0.de/service/platform/assets/v1.0/upload/url`,
-		method: "POST",
-		headers: {
-			accept: "application/json",
-			"Content-Type": "application/json",
-			// Add more headers as required
-		},
-		body: JSON.stringify({
-			url: bundle.inputData.url,
-			path: "/__zapier_Transfomation",
-			tags: bundle.inputData.tags,
-			// Assuming filename is static as per your example
-			access: "public-read", // Assuming access is static as per your example
-			metadata: {}, // Assuming metadata is empty as per your example
-			overwrite: true, // Use provided value or default to false
-			filenameOverride: true,
-		}),
-	});
+	imagetobeTransformed = "";
+	if (bundle.inputData.url.includes("https://cdn.pixelbinz0.de")) {
+		imagetobeTransformed = bundle.inputData.url;
+	} else {
+		try {
+			const response = await z.request({
+				url: `https://api.pixelbinz0.de/service/platform/assets/v1.0/upload/url`,
+				method: "POST",
+				headers: {
+					accept: "application/json",
+					"Content-Type": "application/json",
+					// Add more headers as required
+				},
+				body: JSON.stringify({
+					url: bundle.inputData.url,
+					path: "/__zapier_Transfomation",
+					tags: bundle.inputData.tags,
+					// Assuming filename is static as per your example
+					access: "public-read", // Assuming access is static as per your example
+					metadata: {}, // Assuming metadata is empty as per your example
+					overwrite: true, // Use provided value or default to false
+					filenameOverride: true,
+				}),
+			});
+			imagetobeTransformed = response.data.url;
+		} catch (error) {
+			throw new Error(`FAILED to upload image: ${error}`);
+		}
+	}
 
-	url = response.data.url;
 	let replacement = bundle.inputData.transformationString;
-	url = url.replace("original", replacement);
-	return { url: url };
+	imagetobeTransformed = imagetobeTransformed.replace("original", replacement);
+	return { url: imagetobeTransformed };
 };
 
 module.exports = {

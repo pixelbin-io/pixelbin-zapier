@@ -13,12 +13,6 @@ const test = (z, bundle) => {
 			url: url,
 		})
 		.then((response) => {
-			z.console.log(
-				"<<<<<< Response fromMMMMMM >>>>>",
-				":",
-				response.json.org.cloudName
-			);
-			// bundle.cloudName = response.json.org.cloudName;
 			return response;
 		})
 		.catch((error) => {

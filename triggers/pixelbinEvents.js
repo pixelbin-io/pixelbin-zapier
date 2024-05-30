@@ -2,6 +2,7 @@ var hookID = "";
 const eventIds = [];
 
 const subscribeHook = async (z, bundle) => {
+	const { v4: uuidv4 } = require("uuid");
 	const eventIds = [];
 
 	const fetchEvents = {
@@ -41,29 +42,49 @@ const subscribeHook = async (z, bundle) => {
 		throw error;
 	}
 
-	try {
-		const webhookConfigResponse = await z.request({
-			url: `https://api.pixelbinz0.de/service/platform/notification/v1.0/webhook-configs`,
-			method: "POST",
-			body: {
-				events: [...eventIds],
-				isActive: true,
-				name: bundle.inputData.webhookName,
-				secret: bundle.inputData.secret,
-				url: bundle.targetUrl,
-			},
-		});
+	const testWebHook = {
+		url: `https://api.pixelbinz0.de/service/platform/notification/v1.0/webhook-configs/test`,
+		method: "POST",
+		body: {
+			url: "https://www.example.com",
+			secret: "",
+		},
+	};
 
-		if (webhookConfigResponse.status === 200) {
-			return webhookConfigResponse.data;
-		} else {
-			throw new Error(
-				`Failed to create webhook configuration. Status: ${webhookConfigResponse.status}`
-			);
+	try {
+		let testHookResponse = await z.request(testWebHook);
+		if (testHookResponse.status === 200) {
+			try {
+				const webhookConfigResponse = await z.request({
+					url: `https://api.pixelbinz0.de/service/platform/notification/v1.0/webhook-configs`,
+					method: "POST",
+					body: {
+						events: [...eventIds],
+						isActive: true,
+						name: uuidv4(),
+						secret: "",
+						url: bundle.targetUrl,
+					},
+				});
+
+				if (webhookConfigResponse.status === 200) {
+					hookID = webhookConfigResponse.data.webhookConfigId;
+					return webhookConfigResponse.data;
+				} else {
+					throw new Error(
+						`Failed to create webhook configuration. Status: ${webhookConfigResponse.status}`
+					);
+				}
+			} catch (error) {
+				z.console.log("Error creating webhook configuration: " + error.message);
+				throw error;
+			}
 		}
 	} catch (error) {
-		z.console.log("Error creating webhook configuration: " + error.message);
-		throw error;
+		z.console.log("Error creating TEST WEBHOOK: " + error.message);
+		throw new Error(
+			`Failed to create a test webhook configuration. Status: ${error}`
+		);
 	}
 };
 
@@ -270,7 +291,7 @@ const getDataFromWebHook = async (z, bundle) => {
 	if (obj.event.name === "file") {
 		obj = {
 			...obj,
-			public_id: `https://api.pixelbinz0.de/v2/${orgDetails?.org?.cloudName}/original/${obj.payload.fileId}`,
+			public_id: `https://cdn.pixelbinz0.de/v2/${orgDetails?.org?.cloudName}/original/${obj.payload.fileId}`,
 		};
 	}
 	// Return the modified array
@@ -297,20 +318,6 @@ module.exports = {
 		// `inputFields` can define the fields a user could provide,
 		// we’ll pass them in as `bundle.inputData` later.
 		inputFields: [
-			{
-				key: "webhookName",
-				label: "Webhook Name",
-				required: true,
-				type: "string",
-				helpText:
-					"Provide name for the new webhook to be created (while testing this trigger, new webhook will be created in PixelBin.io).",
-			},
-			{
-				key: "secret",
-				type: "password",
-				required: false,
-				helpText: "Provide the secret key for a webhook to be created.",
-			},
 			{
 				key: "fileUpload",
 				required: true,
@@ -339,6 +346,6 @@ module.exports = {
 		performSubscribe: subscribeHook,
 		performUnsubscribe: unsubscribeHook,
 		perform: getDataFromWebHook,
-		performList: performList,
+		// performList: performList,
 	},
 };

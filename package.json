@@ -10,6 +10,7 @@
 		"@pixelbin/admin": "^4.0.2",
 		"@pixelbin/core": "^6.0.0",
 		"crypto-js": "^4.2.0",
+		"uuid": "^9.0.1",
 		"zapier-platform-core": "15.7.0"
 	},
 	"devDependencies": {
