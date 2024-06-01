@@ -74,64 +74,82 @@ const subscribeHook = async (z, bundle) => {
 	}
 };
 
-const performList = (z, bundle) => {
-	return [
-		{
-			event: {
-				name: "file",
-				type: "create",
-				traceId: "8f2937c8-92f7-47c3-a8eb-71c50408fa3d",
-			},
-			payload: {
-				orgId: 7671,
-				type: "file",
-				name: "pb_result.png",
-				path: "",
-				fileId: "pb_result.png",
-				access: "public-read",
-				tags: [],
-				metadata: {
-					source: "direct",
-				},
-				format: "png",
-				assetType: "image",
-				size: 538309,
-				width: 2660,
-				height: 1360,
-				context: {
-					steps: [],
-					req: {
-						headers: {},
-						query: {},
-					},
-					meta: {
-						format: "png",
-						size: 538309,
-						width: 2660,
-						height: 1360,
-						space: "srgb",
-						channels: 4,
-						depth: "uchar",
-						density: 144,
-						isProgressive: false,
-						resolutionUnit: "inch",
-						hasProfile: true,
-						hasAlpha: true,
-						extension: "png",
-						contentType: "image/png",
-						assetType: "image",
-						isImageAsset: true,
-						isAudioAsset: false,
-						isVideoAsset: false,
-						isRawAsset: false,
-						isTransformationSupported: true,
-					},
-				},
-				isOriginal: true,
-			},
-			public_id: `https://cdn.pixelbinz0.de/v2/polished-hat-8f9bd4/original/image_(4).png`,
+const performList = async (z, bundle) => {
+	const { PixelbinConfig, PixelbinClient } = require("@pixelbin/admin");
+
+	body = {
+		event: {
+			name: "file",
+			type: "create",
+			traceId: "8f2937c8-92f7-47c3-a8eb-71c50408fa3d",
 		},
-	];
+		payload: {
+			orgId: 7671,
+			type: "file",
+			name: "pb_result.png",
+			path: "",
+			fileId: "pb_result.png",
+			access: "public-read",
+			tags: [],
+			metadata: {
+				source: "direct",
+			},
+			format: "png",
+			assetType: "image",
+			size: 538309,
+			width: 2660,
+			height: 1360,
+			context: {
+				steps: [],
+				req: {
+					headers: {},
+					query: {},
+				},
+				meta: {
+					format: "png",
+					size: 538309,
+					width: 2660,
+					height: 1360,
+					space: "srgb",
+					channels: 4,
+					depth: "uchar",
+					density: 144,
+					isProgressive: false,
+					resolutionUnit: "inch",
+					hasProfile: true,
+					hasAlpha: true,
+					extension: "png",
+					contentType: "image/png",
+					assetType: "image",
+					isImageAsset: true,
+					isAudioAsset: false,
+					isVideoAsset: false,
+					isRawAsset: false,
+					isTransformationSupported: true,
+				},
+			},
+			isOriginal: true,
+		},
+		public_id: `https://cdn.pixelbinz0.de/v2/polished-hat-8f9bd4/original/dummy_image.png`,
+	};
+
+	let defaultPixelBinClient = new PixelbinClient(
+		new PixelbinConfig({
+			domain: `https://api.pixelbinz0.de`,
+			apiSecret: bundle.authData.apiKey,
+		})
+	);
+	let temp = await defaultPixelBinClient.assets.listFilesPaginator({
+		onlyFiles: true,
+		path: "",
+	});
+	const { items, page } = await temp.next();
+
+	if (items.length) {
+		body.public_id = items[0].url;
+	}
+
+	return [{ ...body }];
 };
 
 const unsubscribeHook = (z, bundle, retries = 4) => {
@@ -225,7 +243,7 @@ module.exports = {
 	noun: "CreateFile",
 	display: {
 		label: "Create File",
-		description: "Triggers when an image is uploaded to PixelBin.io .",
+		description: "Triggers when an image is uploaded to PixelBin.io sssbbbbbb.",
 	},
 
 	// `operation` is where the business logic goes.
@@ -239,6 +257,6 @@ module.exports = {
 		performSubscribe: subscribeHook,
 		performUnsubscribe: unsubscribeHook,
 		perform: getDataFromWebHook,
-		// performList: performList,
+		performList: performList,
 	},
 };

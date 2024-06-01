@@ -242,6 +242,6 @@ module.exports = {
 		performSubscribe: subscribeHook,
 		performUnsubscribe: unsubscribeHook,
 		perform: getDataFromWebHook,
-		// performList: performList,
+		performList: performList,
 	},
 };

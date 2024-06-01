@@ -117,22 +117,46 @@ const deletePropertiesRecursive = (obj) => {
 	}
 };
 
-const performList = (z, bundle) => {
-	return [
-		{
-			event: {
-				name: "folder",
-				type: "create",
-				traceId: "c19e8dfc-b94f-4bc5-8725-d3ff361035e1",
-			},
-			payload: {
-				_id: "d8e0394c-2235-422e-bd48-53c4cf1ae0f4",
-				name: "folderName",
-				path: "",
-				isActive: true,
-			},
+const performList = async (z, bundle) => {
+	const { PixelbinConfig, PixelbinClient } = require("@pixelbin/admin");
+
+	body = {
+		event: {
+			name: "folder",
+			type: "create",
+			traceId: "c19e8dfc-b94f-4bc5-8725-d3ff361035e1",
 		},
-	];
+		payload: {
+			_id: "d8e0394c-2235-422e-bd48-53c4cf1ae0f4",
+			name: "folderName",
+			path: "",
+			isActive: true,
+		},
+	};
+
+	let defaultPixelBinClient = new PixelbinClient(
+		new PixelbinConfig({
+			domain: `https://api.pixelbinz0.de`,
+			apiSecret: bundle.authData.apiKey,
+		})
+	);
+
+	try {
+		let temp = await defaultPixelBinClient.assets.listFilesPaginator({
+			onlyFolders: true,
+			path: "",
+		});
+		const { items, page } = await temp.next();
+
+		if (items.length) {
+			body.payload.id = items[0]._id;
+			body.payload.name = items[0].name;
+		}
+	} catch (error) {
+		throw error;
+	}
+
+	return [{ ...body }];
 };
 
 const getDataFromWebHook = async (z, bundle) => {
@@ -196,6 +220,6 @@ module.exports = {
 		performSubscribe: subscribeHook,
 		performUnsubscribe: unsubscribeHook,
 		perform: getDataFromWebHook,
-		// performList: performList,
+		performList: performList,
 	},
 };
