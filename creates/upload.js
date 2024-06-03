@@ -27,7 +27,6 @@ const perform = async (z, bundle) => {
 		headers: {
 			accept: "application/json",
 			"Content-Type": "application/json",
-			// Add more headers as required
 		},
 		body: JSON.stringify(bodyData),
 	});
@@ -45,7 +44,6 @@ const perform = async (z, bundle) => {
 
 	return responseData;
 };
-// Register the action in Zapier
 module.exports = {
 	key: "uploadFile",
 	noun: "File",
@@ -58,7 +56,7 @@ module.exports = {
 		inputFields: [
 			{
 				key: "url",
-				// required: true,
+				required: true,
 				type: "string",
 				helpText: "Image to be uploaded.",
 			},

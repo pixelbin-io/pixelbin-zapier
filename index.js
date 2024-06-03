@@ -12,8 +12,6 @@ const {
 } = require("./authentication");
 
 const App = {
-	// This is just shorthand to reference the installed dependencies you have. Zapier will
-	// need to know these before we can upload
 	version: require("./package.json").version,
 	platformVersion: require("zapier-platform-core").version,
 	authentication,
@@ -33,8 +31,6 @@ const App = {
 		[deleteFileTrigger.key]: deleteFileTrigger,
 		[createFolderTrigger.key]: createFolderTrigger,
 	},
-
-	// If you want your searches to show up, you better include it here!
 	searches: {},
 
 	// If you want your creates to show up, you better include it here!
@@ -42,9 +38,7 @@ const App = {
 		[transform.key]: transform,
 		[upload.key]: upload,
 		[createReport.key]: createReport,
-		// [issueCreate.key]: issueCreate,
 	},
 };
 
-// Finally, export the app.
 module.exports = App;
