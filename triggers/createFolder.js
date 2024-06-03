@@ -3,10 +3,13 @@ const eventIds = [];
 
 const subscribeHook = async (z, bundle) => {
 	const { v4: uuidv4 } = require("uuid");
+	const zapier = require("zapier-platform-core");
+	zapier.tools.env.inject();
+
 	const eventIds = [];
 
 	const fetchEvents = {
-		url: `https://api.pixelbinz0.de/service/platform/notification/v1.0/events`,
+		url: `${process.env.BASE_URL}/service/platform/notification/v1.0/events`,
 		method: "GET",
 	};
 
@@ -28,7 +31,7 @@ const subscribeHook = async (z, bundle) => {
 	}
 
 	const testWebHook = {
-		url: `https://api.pixelbinz0.de/service/platform/notification/v1.0/webhook-configs/test`,
+		url: `${process.env.BASE_URL}/service/platform/notification/v1.0/webhook-configs/test`,
 		method: "POST",
 		body: {
 			url: "https://www.example.com",
@@ -41,7 +44,7 @@ const subscribeHook = async (z, bundle) => {
 		if (testHookResponse.status === 200) {
 			try {
 				const webhookConfigResponse = await z.request({
-					url: `https://api.pixelbinz0.de/service/platform/notification/v1.0/webhook-configs`,
+					url: `${process.env.BASE_URL}/service/platform/notification/v1.0/webhook-configs`,
 					method: "POST",
 					body: {
 						events: [...eventIds],
@@ -74,8 +77,11 @@ const subscribeHook = async (z, bundle) => {
 };
 
 const unsubscribeHook = (z, bundle) => {
+	const zapier = require("zapier-platform-core");
+	zapier.tools.env.inject();
+
 	const options = {
-		url: `https://api.pixelbinz0.de/service/platform/notification/v1.0/webhook-configs/${hookID}`,
+		url: `${process.env.BASE_URL}/service/platform/notification/v1.0/webhook-configs/${hookID}`,
 		method: "DELETE",
 	};
 	return z
@@ -107,6 +113,8 @@ const deletePropertiesRecursive = (obj) => {
 
 const performList = async (z, bundle) => {
 	const { PixelbinConfig, PixelbinClient } = require("@pixelbin/admin");
+	const zapier = require("zapier-platform-core");
+	zapier.tools.env.inject();
 
 	body = {
 		event: {
@@ -124,7 +132,7 @@ const performList = async (z, bundle) => {
 
 	let defaultPixelBinClient = new PixelbinClient(
 		new PixelbinConfig({
-			domain: `https://api.pixelbinz0.de`,
+			domain: `${process.env.BASE_URL}`,
 			apiSecret: bundle.authData.apiKey,
 		})
 	);
@@ -149,6 +157,8 @@ const performList = async (z, bundle) => {
 
 const getDataFromWebHook = async (z, bundle) => {
 	const { PixelbinConfig, PixelbinClient } = require("@pixelbin/admin");
+	const zapier = require("zapier-platform-core");
+	zapier.tools.env.inject();
 
 	let defaultPixelBinClient = new PixelbinClient(
 		new PixelbinConfig({

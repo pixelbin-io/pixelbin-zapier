@@ -1,7 +1,9 @@
 "use strict";
+const zapier = require("zapier-platform-core");
 
 const test = (z, bundle) => {
-	const url = `https://api.pixelbinz0.de/service/platform/organization/v1.0/apps/info`;
+	zapier.tools.env.inject();
+	const url = `${process.env.BASE_URL}/service/platform/organization/v1.0/apps/info`;
 	return z
 		.request({
 			url: url,
@@ -370,7 +372,7 @@ module.exports = {
 				required: true,
 				type: "password",
 				helpText:
-					"1. Go to [console.pixelbin.io](https://console.pixelbinz0.de/choose-org?redirectTo=settings/apps) and create a free account (you will need to confirm your email). \n2. You can refer our [documentation](https://www.pixelbinz0.de/docs/getting-started) to create account. \n3. After that, you can find your API token [here](https://console.pixelbinz0.de/choose-org?redirectTo=settings/apps).",
+					"1. Go to [console.pixelbin.io](https://console.pixelbin.io/choose-org?redirectTo=settings/apps) and create a free account (you will need to confirm your email). \n2. You can refer our [documentation](https://www.pixelbin.io/docs/getting-started) to create account. \n3. After that, you can find your API token [here](https://console.pixelbin.io/choose-org?redirectTo=settings/apps).",
 			},
 		],
 		test,

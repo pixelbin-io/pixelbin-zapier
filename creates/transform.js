@@ -1,13 +1,15 @@
 const sample = require("../samples/sample_issue");
+const zapier = require("zapier-platform-core");
 
 const perform = async (z, bundle) => {
+	zapier.tools.env.inject();
 	imagetobeTransformed = "";
-	if (bundle.inputData.url.includes("https://cdn.pixelbinz0.de")) {
+	if (bundle.inputData.url.includes(`${process.env.CDN_URL}`)) {
 		imagetobeTransformed = bundle.inputData.url;
 	} else {
 		try {
 			const response = await z.request({
-				url: `https://api.pixelbinz0.de/service/platform/assets/v1.0/upload/url`,
+				url: `${process.env.BASE_URL}/service/platform/assets/v1.0/upload/url`,
 				method: "POST",
 				headers: {
 					accept: "application/json",

@@ -1,4 +1,7 @@
+const zapier = require("zapier-platform-core");
+
 const perform = async (z, bundle) => {
+	zapier.tools.env.inject();
 	const bodyData = {
 		url: bundle.inputData.url,
 		path: bundle.inputData.path
@@ -22,7 +25,7 @@ const perform = async (z, bundle) => {
 	}
 
 	const response = await z.request({
-		url: `https://api.pixelbinz0.de/service/platform/assets/v1.0/upload/url`,
+		url: `${process.env.BASE_URL}/service/platform/assets/v1.0/upload/url`,
 		method: "POST",
 		headers: {
 			accept: "application/json",

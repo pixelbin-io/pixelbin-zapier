@@ -1,7 +1,8 @@
 const { PixelbinConfig, PixelbinClient } = require("@pixelbin/admin");
 const sample = require("../samples/sample_issue");
-
+const zapier = require("zapier-platform-core");
 const createIssue = async (z, bundle) => {
+	zapier.tools.env.inject();
 	let defaultPixelBinClient = new PixelbinClient(
 		new PixelbinConfig({
 			domain: `${process.env.BASE_URL}`,

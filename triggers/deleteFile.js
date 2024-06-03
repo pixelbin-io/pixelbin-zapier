@@ -3,10 +3,12 @@ const eventIds = [];
 
 const subscribeHook = async (z, bundle) => {
 	const { v4: uuidv4 } = require("uuid");
+	const zapier = require("zapier-platform-core");
+	zapier.tools.env.inject();
 	const eventIds = [];
 
 	const fetchEvents = {
-		url: `https://api.pixelbinz0.de/service/platform/notification/v1.0/events`,
+		url: `${process.env.BASE_URL}/service/platform/notification/v1.0/events`,
 		method: "GET",
 	};
 
@@ -28,7 +30,7 @@ const subscribeHook = async (z, bundle) => {
 	}
 
 	const testWebHook = {
-		url: `https://api.pixelbinz0.de/service/platform/notification/v1.0/webhook-configs/test`,
+		url: `${process.env.BASE_URL}/service/platform/notification/v1.0/webhook-configs/test`,
 		method: "POST",
 		body: {
 			url: "https://www.example.com",
@@ -41,7 +43,7 @@ const subscribeHook = async (z, bundle) => {
 		if (testHookResponse.status === 200) {
 			try {
 				const webhookConfigResponse = await z.request({
-					url: `https://api.pixelbinz0.de/service/platform/notification/v1.0/webhook-configs`,
+					url: `${process.env.BASE_URL}/service/platform/notification/v1.0/webhook-configs`,
 					method: "POST",
 					body: {
 						events: [...eventIds],
@@ -74,6 +76,8 @@ const subscribeHook = async (z, bundle) => {
 };
 
 const performList = (z, bundle) => {
+	const zapier = require("zapier-platform-core");
+	zapier.tools.env.inject();
 	return [
 		{
 			event: {
@@ -95,7 +99,7 @@ const performList = (z, bundle) => {
 				metadata: {
 					source: "direct",
 				},
-				url: "https://cdn.pixelbinz0.de/v2/still-bonus-205d85/original/pb_result.png",
+				url: `${process.env.CDN_URL}/v2/still-bonus-205d85/original/pb_result.png`,
 				meta: {},
 				kvStore: [],
 				height: 1360,
@@ -132,14 +136,16 @@ const performList = (z, bundle) => {
 					steps: [],
 				},
 			},
-			public_id: `https://cdn.pixelbinz0.de/v2/polished-hat-8f9bd4/original/image_(4).png`,
+			public_id: `${process.env.CDN_URL}/v2/polished-hat-8f9bd4/original/dummy_image.png`,
 		},
 	];
 };
 
 const unsubscribeHook = (z, bundle) => {
+	const zapier = require("zapier-platform-core");
+	zapier.tools.env.inject();
 	const options = {
-		url: `https://api.pixelbinz0.de/service/platform/notification/v1.0/webhook-configs/${hookID}`,
+		url: `${process.env.BASE_URL}/service/platform/notification/v1.0/webhook-configs/${hookID}`,
 		method: "DELETE",
 	};
 	return z
@@ -172,6 +178,8 @@ const deletePropertiesRecursive = (obj) => {
 
 const getDataFromWebHook = async (z, bundle) => {
 	const { PixelbinConfig, PixelbinClient } = require("@pixelbin/admin");
+	const zapier = require("zapier-platform-core");
+	zapier.tools.env.inject();
 
 	let defaultPixelBinClient = new PixelbinClient(
 		new PixelbinConfig({
@@ -196,7 +204,7 @@ const getDataFromWebHook = async (z, bundle) => {
 	if (obj.event.name === "file") {
 		obj = {
 			...obj,
-			public_id: `https://cdn.pixelbinz0.de/v2/${orgDetails?.org?.cloudName}/original/${obj.payload.fileId}`,
+			public_id: `${process.env.CDN_URL}/v2/${orgDetails?.org?.cloudName}/original/${obj.payload.fileId}`,
 		};
 	}
 
