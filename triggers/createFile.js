@@ -243,7 +243,7 @@ module.exports = {
 	noun: "CreateFile",
 	display: {
 		label: "Create File",
-		description: "Triggers when an image is uploaded to PixelBin.io sssbbbbbb.",
+		description: "Triggers when an image is uploaded to PixelBin.io.",
 	},
 
 	// `operation` is where the business logic goes.

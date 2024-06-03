@@ -51,7 +51,7 @@ module.exports = {
 	noun: "File",
 	display: {
 		label: "Upload File to Pixelbin",
-		description: "Uploads a file to Pixelbin.io.",
+		description: "Uploads an image to Pixelbin.io.",
 	},
 	operation: {
 		perform,
@@ -60,7 +60,7 @@ module.exports = {
 				key: "url",
 				// required: true,
 				type: "string",
-				helpText: "URL of an image to upload.",
+				helpText: "Image to be uploaded.",
 			},
 			{
 				key: "path",

@@ -72,7 +72,7 @@ module.exports = {
 
 	display: {
 		label: "Transform Resource",
-		description: "Creates a PixeBin.io URL of the transformed resource.",
+		description: "Transforms Image using Pixelbin.io",
 	},
 
 	operation: {
@@ -82,7 +82,8 @@ module.exports = {
 				key: "url",
 				required: true,
 				type: "string",
-				helpText: "URL of the image to upload.",
+				label: "Image / Url",
+				helpText: "Image to be transformed.",
 			},
 			// {
 			// 	key: "path",
