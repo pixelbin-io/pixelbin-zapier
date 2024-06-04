@@ -20,12 +20,21 @@ module.exports = {
 
 	display: {
 		label: "Create Usage Report",
-		description: "Generates your PixelBin.io's storage report",
+		description: "Generates your PixelBin.io's storage reports",
 	},
 
 	operation: {
 		inputFields: [],
 		perform: createIssue,
-		sample: sample,
+		sample: {
+			storage: {
+				total: 16106127360,
+				used: 7774632,
+			},
+			credits: {
+				total: 1000,
+				used: 55.98050216973573,
+			},
+		},
 	},
 };
