@@ -1,11 +1,10 @@
-const sample = require("../samples/sample_issue");
 const zapier = require("zapier-platform-core");
 
 const perform = async (z, bundle) => {
 	zapier.tools.env.inject();
-	imagetobeTransformed = "";
+	imageTobeTransformed = "";
 	if (bundle.inputData.url.includes(`${process.env.CDN_URL}`)) {
-		imagetobeTransformed = bundle.inputData.url;
+		imageTobeTransformed = bundle.inputData.url;
 	} else {
 		try {
 			const response = await z.request({
@@ -25,17 +24,17 @@ const perform = async (z, bundle) => {
 					filenameOverride: bundle.inputData.filenameOverride || true,
 				}),
 			});
-			imagetobeTransformed = response.data.url;
+			imageTobeTransformed = response.data.url;
 		} catch (error) {
 			throw new Error(`FAILED to upload image: ${error}`);
 		}
 	}
 
 	let replacement = bundle.inputData.transformationString;
-	imagetobeTransformed = imagetobeTransformed.replace("original", replacement);
+	imageTobeTransformed = imageTobeTransformed.replace("original", replacement);
 
 	testImageUrl = {
-		url: imagetobeTransformed,
+		url: imageTobeTransformed,
 		method: "GET",
 	};
 
@@ -49,7 +48,7 @@ const perform = async (z, bundle) => {
 			statusCode = response.status;
 
 			if (statusCode === 200) {
-				return { url: imagetobeTransformed };
+				return { url: imageTobeTransformed };
 			}
 			if (statusCode === 202) {
 				setTimeout(() => {
@@ -66,7 +65,7 @@ const perform = async (z, bundle) => {
 
 module.exports = {
 	key: "transform",
-	noun: "transform",
+	noun: "Image",
 
 	display: {
 		label: "Transform Resource",
@@ -111,6 +110,9 @@ module.exports = {
 				helpText: "Whether to override the filename if it already exists.",
 			},
 		],
-		sample: sample,
+		sample: {
+			url: "https://cdn.pixelbin.io/v2/muddy-lab-41820d/t.resize(w:128,h:128)/dummy_image.png",
+			url_resize: "w:128,h:128",
+		},
 	},
 };

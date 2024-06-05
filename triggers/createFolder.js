@@ -181,7 +181,7 @@ const getDataFromWebHook = async (z, bundle) => {
 module.exports = {
 	key: "createFolder",
 
-	noun: "CreateFolder",
+	noun: "Folder",
 	display: {
 		label: "Create Folder",
 		description: "Triggers when a new folder is created in PixelBin.io.",

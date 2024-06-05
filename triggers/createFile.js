@@ -233,7 +233,7 @@ const getDataFromWebHook = async (z, bundle) => {
 module.exports = {
 	key: "createFile",
 
-	noun: "CreateFile",
+	noun: "File",
 	display: {
 		label: "Create File",
 		description: "Triggers when an image is uploaded to PixelBin.io.",

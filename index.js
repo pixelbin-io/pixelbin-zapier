@@ -1,8 +1,8 @@
-const pixelbinEvents = require("./triggers/pixelbinEvents");
+const PixelbinAllEvents = require("./triggers/PixelbinAllEvents");
 const createFileTrigger = require("./triggers/createFile");
 const deleteFileTrigger = require("./triggers/deleteFile");
 const createFolderTrigger = require("./triggers/createFolder");
-const createReport = require("./creates/createReport");
+const createUsageReport = require("./creates/createUsageReport");
 const transform = require("./creates/transform");
 const upload = require("./creates/upload");
 const {
@@ -26,7 +26,7 @@ const App = {
 
 	// If you want your trigger to show up, you better include it here!
 	triggers: {
-		[pixelbinEvents.key]: pixelbinEvents,
+		[PixelbinAllEvents.key]: PixelbinAllEvents,
 		[createFileTrigger.key]: createFileTrigger,
 		[deleteFileTrigger.key]: deleteFileTrigger,
 		[createFolderTrigger.key]: createFolderTrigger,
@@ -37,7 +37,7 @@ const App = {
 	creates: {
 		[transform.key]: transform,
 		[upload.key]: upload,
-		[createReport.key]: createReport,
+		[createUsageReport.key]: createUsageReport,
 	},
 };
 

@@ -1,7 +1,6 @@
 const { PixelbinConfig, PixelbinClient } = require("@pixelbin/admin");
-const sample = require("../samples/sample_issue");
 const zapier = require("zapier-platform-core");
-const createIssue = async (z, bundle) => {
+const createReport = async (z, bundle) => {
 	zapier.tools.env.inject();
 	let defaultPixelBinClient = new PixelbinClient(
 		new PixelbinConfig({
@@ -15,17 +14,17 @@ const createIssue = async (z, bundle) => {
 };
 
 module.exports = {
-	key: "createReport",
-	noun: "createReport",
+	key: "createUsageReport",
+	noun: "createUsageReport",
 
 	display: {
 		label: "Create Usage Report",
-		description: "Generates your PixelBin.io's storage report",
+		description: "Generates your PixelBin.io's usage report",
 	},
 
 	operation: {
 		inputFields: [],
-		perform: createIssue,
+		perform: createReport,
 		sample: {
 			storage: {
 				total: 16106127360,

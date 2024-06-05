@@ -214,7 +214,7 @@ const getDataFromWebHook = async (z, bundle) => {
 module.exports = {
 	key: "deleteFile",
 
-	noun: "DeleteFile",
+	noun: "File",
 	display: {
 		label: "Delete File",
 		description: "Triggers when an image is deleted from PixelBin.io",
