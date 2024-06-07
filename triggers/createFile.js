@@ -236,7 +236,7 @@ module.exports = {
 	noun: "File",
 	display: {
 		label: "Create File",
-		description: "Triggers when an image is uploaded to PixelBin.io.",
+		description: "Triggers when an image is uploaded to PixelBin.io",
 	},
 
 	operation: {

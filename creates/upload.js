@@ -6,7 +6,7 @@ const perform = async (z, bundle) => {
 		url: bundle.inputData.url,
 		path: bundle.inputData.path
 			? `/${bundle.inputData.path}`
-			: "/__zapier_Uploads",
+			: "/__zapier/uploads",
 		access: "public-read",
 		tags: bundle.inputData.tags,
 		metadata: {},
@@ -52,7 +52,7 @@ module.exports = {
 	noun: "File",
 	display: {
 		label: "Upload File to Pixelbin",
-		description: "Uploads an image to Pixelbin.io.",
+		description: "Uploads an image to Pixelbin.io",
 	},
 	operation: {
 		perform,
@@ -68,7 +68,7 @@ module.exports = {
 				required: false,
 				type: "string",
 				helpText:
-					"Path to upload image at. e.g folderName or parentFolder/childFolder. If not provided default folder __zapier_Uploads will be used.",
+					"Path to upload image at. e.g folderName or parentFolder/childFolder. If not provided default folder __zapier/uploads will be used.",
 			},
 			{
 				key: "filename",
@@ -102,8 +102,8 @@ module.exports = {
 			orgId: 226275,
 			type: "file",
 			name: "dummy_image.png",
-			path: "__zapier_Uploads",
-			fileId: "__zapier_Uploads/dummy_image.png",
+			path: "__zapier/uploads",
+			fileId: "__zapier/uploads/dummy_image.png",
 			access: "public-read",
 			metadata: {
 				source: "direct",

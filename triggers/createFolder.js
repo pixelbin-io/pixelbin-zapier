@@ -184,7 +184,7 @@ module.exports = {
 	noun: "Folder",
 	display: {
 		label: "Create Folder",
-		description: "Triggers when a new folder is created in PixelBin.io.",
+		description: "Triggers when a new folder is created in PixelBin.io",
 	},
 
 	operation: {

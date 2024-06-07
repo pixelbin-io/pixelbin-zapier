@@ -346,7 +346,7 @@ module.exports = {
 	display: {
 		label: "Storage Monitor",
 		description:
-			"Triggers when an image is uploaded or deleted, or a new folder is created in PixelBin.io.",
+			"Triggers when an image is uploaded or deleted, or a new folder is created in PixelBin.io",
 	},
 	operation: {
 		inputFields: [

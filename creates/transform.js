@@ -16,7 +16,7 @@ const perform = async (z, bundle) => {
 				},
 				body: JSON.stringify({
 					url: bundle.inputData.url,
-					path: "/__zapier_Transformation",
+					path: "/__zapier/transformations",
 					tags: bundle.inputData.tags,
 					access: "public-read",
 					metadata: {},
