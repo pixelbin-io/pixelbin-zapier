@@ -18,7 +18,7 @@ describe("triggers", () => {
 			};
 
 			const response = await appTester(
-				App.triggers.asset.operation.performSubscribe,
+				App.triggers.createFile.operation.performSubscribe,
 				bundle
 			);
 			expect(response.message).toBe("Created new webhook config");
@@ -33,7 +33,7 @@ describe("triggers", () => {
 			};
 
 			const response = await appTester(
-				App.triggers.asset.operation.performUnsubscribe,
+				App.triggers.createFile.operation.performUnsubscribe,
 				bundle
 			);
 

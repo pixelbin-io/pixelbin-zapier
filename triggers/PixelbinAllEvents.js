@@ -7,6 +7,8 @@ const subscribeHook = async (z, bundle) => {
 	zapier.tools.env.inject();
 	const eventIds = [];
 
+	console.log("BUNDLEDATAZZZZZZZ", z, "BUNDLEDATA", bundle);
+
 	const fetchEvents = {
 		url: `${process.env.BASE_URL}/service/platform/notification/v1.0/events`,
 		method: "GET",
@@ -17,25 +19,36 @@ const subscribeHook = async (z, bundle) => {
 
 		if (response.status === 200) {
 			const temp = [...response.data];
-			if (bundle.inputData.fileCreate) {
+			if (bundle.inputData.dynamic_dropdown.includes("fileCreate")) {
 				const obj = temp.find(
 					(item) => item.name === "file" && item.type === "create"
 				);
 				eventIds.push(obj._id);
 			}
-			if (bundle.inputData.fileDelete) {
+			if (bundle.inputData.dynamic_dropdown.includes("fileDelete")) {
 				const obj = temp.find(
 					(item) => item.name === "file" && item.type === "delete"
 				);
 				eventIds.push(obj._id);
 			}
-			if (bundle.inputData.folderCreate) {
+			if (bundle.inputData.dynamic_dropdown.includes("fileUpdate")) {
+				const obj = temp.find(
+					(item) => item.name === "file" && item.type === "update"
+				);
+				eventIds.push(obj._id);
+			}
+			if (bundle.inputData.dynamic_dropdown.includes("folderCreate")) {
 				const obj = temp.find(
 					(item) => item.name === "folder" && item.type === "create"
 				);
 				eventIds.push(obj._id);
 			}
-			z.console.log("ID_ARRAY", eventIds);
+			if (bundle.inputData.dynamic_dropdown.includes("folderUpdate")) {
+				const obj = temp.find(
+					(item) => item.name === "folder" && item.type === "update"
+				);
+				eventIds.push(obj._id);
+			}
 		} else {
 			throw new Error(`Failed to retrieve events. Status: ${response.status}`);
 		}
@@ -90,6 +103,32 @@ const subscribeHook = async (z, bundle) => {
 	}
 };
 
+const getDynamicDropdownChoices = async (z, bundle) => {
+	const zapier = require("zapier-platform-core");
+	zapier.tools.env.inject();
+	const fetchEvents = {
+		url: `${process.env.BASE_URL}/service/platform/notification/v1.0/events`,
+		method: "GET",
+	};
+
+	try {
+		let response = await z.request(fetchEvents);
+
+		if (response.status === 200) {
+			const items = [...response.data];
+			return items.map((item) => ({
+				label: `${item.name} ${item.type}`,
+				value: `${item.name}${item.type}`,
+			}));
+		} else {
+			throw new Error(`Failed to retrieve events. Status: ${response.status}`);
+		}
+	} catch (error) {
+		z.console.log("Error fetching events: " + error.message);
+		throw error;
+	}
+};
+
 const unsubscribeHook = (z, bundle) => {
 	const zapier = require("zapier-platform-core");
 	zapier.tools.env.inject();
@@ -129,6 +168,18 @@ const performList = async (z, bundle) => {
 	const { PixelbinConfig, PixelbinClient } = require("@pixelbin/admin");
 	const zapier = require("zapier-platform-core");
 	zapier.tools.env.inject();
+	const { v4: uuidv4 } = require("uuid");
+	orgId = "";
+
+	try {
+		const orgDetails =
+			await defaultPixelBinClient.organization.getAppOrgDetails();
+		orgId = orgDetails.app.orgId;
+	} catch (error) {
+		console.log("error", error);
+	}
+
+	orgDetails = {};
 
 	folderCreateData = {
 		event: {
@@ -150,7 +201,7 @@ const performList = async (z, bundle) => {
 			traceId: "8f2937c8-92f7-47c3-a8eb-71c50408fa3d",
 		},
 		payload: {
-			orgId: 7671,
+			orgId: orgId,
 			type: "file",
 			name: "pb_result.png",
 			path: "",
@@ -257,6 +308,73 @@ const performList = async (z, bundle) => {
 		},
 		public_id: `${process.env.CDN_URL}/v2/polished-hat-8f9bd4/original/dummy_image.png`,
 	};
+	fileUpdateData = {
+		event: {
+			name: "file",
+			type: "update",
+			traceId: "c0fe84e6-bf21-46dc-9030-bb3f79ad46f2",
+		},
+		payload: {
+			_id: "c0fe84e6-bf21-46dc-9030-bb1198ad46f2",
+			name: "brywb",
+			path: "",
+			fileId: "brywb",
+			format: "jpeg",
+			assetType: "image",
+			access: "public-read",
+			size: 205458,
+			isActive: true,
+			tags: [],
+			metadata: {
+				source: "direct",
+			},
+			url: "https://cdn.pixelbin.io/v2/muddy-lab-41820d/original/brywb",
+			meta: {},
+			kvStore: [],
+			height: 1390,
+			width: 1163,
+			createdAt: "2024-05-16T03:48:33.796Z",
+			updatedAt: "2024-06-07T11:36:50.136Z",
+			context: {
+				req: {
+					query: {},
+					headers: {},
+				},
+				meta: {
+					size: 205458,
+					depth: "uchar",
+					space: "srgb",
+					width: 1163,
+					format: "jpeg",
+					height: 1390,
+					density: 300,
+					channels: 3,
+					hasAlpha: false,
+					assetType: "image",
+					extension: "jpeg",
+					hasProfile: false,
+					isRawAsset: false,
+					contentType: "image/jpeg",
+					isAudioAsset: false,
+					isImageAsset: true,
+					isVideoAsset: false,
+					isProgressive: false,
+					resolutionUnit: "inch",
+					chromaSubsampling: "4:2:0",
+					isTransformationSupported: true,
+				},
+				steps: [],
+			},
+		},
+		public_id:
+			"https://cdn.pixelbin.io/v2/muddy-lab-41820d/original/duumy_image.png",
+	};
+	folderUpdateData = {
+		_id: "c0fe84e6-bf21-46dc-9030-bb3f98ad56d2",
+		name: "__zapier_Transformation",
+		path: "",
+		isActive: false,
+	};
 
 	let defaultPixelBinClient = new PixelbinClient(
 		new PixelbinConfig({
@@ -265,7 +383,7 @@ const performList = async (z, bundle) => {
 		})
 	);
 
-	if (bundle.inputData.folderCreate) {
+	if (bundle.inputData.dynamic_dropdown.includes("folderCreate")) {
 		try {
 			let temp = await defaultPixelBinClient.assets.listFilesPaginator({
 				onlyFolders: true,
@@ -274,15 +392,16 @@ const performList = async (z, bundle) => {
 			const { items, page } = await temp.next();
 
 			if (items.length) {
-				folderCreateData.payload.id = items[0]._id;
-				folderCreateData.payload.name = items[0].name;
+				folderCreateData._id = items[0]._id;
+				folderCreateData.name = items[0].name;
+				folderCreateData.path = items[0].path;
 			}
 		} catch (error) {
 			throw error;
 		}
 	}
 
-	if (bundle.inputData.fileCreate) {
+	if (bundle.inputData.dynamic_dropdown.includes("fileCreate")) {
 		try {
 			let temp = await defaultPixelBinClient.assets.listFilesPaginator({
 				onlyFiles: true,
@@ -292,6 +411,68 @@ const performList = async (z, bundle) => {
 
 			if (items.length) {
 				fileCreateData.public_id = items[0].url;
+				fileCreateData.payload.name = items[0].name;
+				fileCreateData.payload.path = items[0].path;
+				fileCreateData.payload.fileId = items[0].fileId;
+				fileCreateData.payload.tags = [...items[0].tags];
+				fileCreateData.payload.format = items[0].format;
+				fileCreateData.payload.assetType = items[0].assetType;
+				fileCreateData.payload.size = items[0].size;
+				fileCreateData.payload.width = items[0].width;
+				fileCreateData.payload.height = items[0].height;
+				fileCreateData.payload.context.meta.extension = items[0].format;
+				fileCreateData.payload.assetType = items[0].assetType;
+				fileCreateData.payload.context.meta.size = items[0].size;
+				fileCreateData.payload.context.meta.width = items[0].width;
+				fileCreateData.payload.context.meta.height = items[0].height;
+			}
+		} catch (error) {
+			throw error;
+		}
+	}
+
+	if (bundle.inputData.dynamic_dropdown.includes("fileUpdate")) {
+		try {
+			let temp = await defaultPixelBinClient.assets.listFilesPaginator({
+				onlyFiles: true,
+				path: "",
+			});
+			const { items, page } = await temp.next();
+
+			if (items.length) {
+				fileUpdateData.public_id = items[0].url;
+				fileUpdateData.payload.name = items[0].name;
+				fileUpdateData.payload.path = items[0].path;
+				fileUpdateData.payload.fileId = items[0].fileId;
+				fileUpdateData.payload.tags = [...items[0].tags];
+				fileUpdateData.payload.format = items[0].format;
+				fileUpdateData.payload.assetType = items[0].assetType;
+				fileUpdateData.payload.size = items[0].size;
+				fileUpdateData.payload.width = items[0].width;
+				fileUpdateData.payload.height = items[0].height;
+				fileUpdateData.payload.context.meta.extension = items[0].format;
+				fileUpdateData.payload.assetType = items[0].assetType;
+				fileUpdateData.payload.context.meta.size = items[0].size;
+				fileUpdateData.payload.context.meta.width = items[0].width;
+				fileUpdateData.payload.context.meta.height = items[0].height;
+			}
+		} catch (error) {
+			throw error;
+		}
+	}
+
+	if (bundle.inputData.dynamic_dropdown.includes("folderUpdate")) {
+		try {
+			let temp = await defaultPixelBinClient.assets.listFilesPaginator({
+				onlyFolders: true,
+				path: "",
+			});
+			const { items, page } = await temp.next();
+
+			if (items.length) {
+				folderUpdateData._id = items[0]._id;
+				folderUpdateData.name = items[0].name;
+				folderUpdateData.path = items[0].path;
 			}
 		} catch (error) {
 			throw error;
@@ -300,9 +481,14 @@ const performList = async (z, bundle) => {
 
 	tempBody = [];
 
-	if (bundle.inputData.fileCreate) tempBody.push({ ...fileCreateData });
-	if (bundle.inputData.folderCreate) tempBody.push({ ...folderCreateData });
-	if (bundle.inputData.fileDelete) tempBody.push({ ...fileDeleteData });
+	if (bundle.inputData.dynamic_dropdown.includes("fileCreate"))
+		tempBody.push({ ...fileCreateData });
+	if (bundle.inputData.dynamic_dropdown.includes("fileDelete"))
+		tempBody.push({ ...fileDeleteData });
+	if (bundle.inputData.dynamic_dropdown.includes("folderCreate"))
+		tempBody.push({ ...folderCreateData });
+	if (bundle.inputData.dynamic_dropdown.includes("fileUpdate"))
+		tempBody.push({ ...fileUpdateData });
 
 	return [...tempBody];
 };
@@ -325,6 +511,7 @@ const getDataFromWebHook = async (z, bundle) => {
 		delete obj.querystring;
 		delete obj.s3Bucket;
 		delete obj.s3Key;
+
 		deletePropertiesRecursive(obj);
 	});
 
@@ -337,44 +524,92 @@ const getDataFromWebHook = async (z, bundle) => {
 		};
 	}
 
-	return [{ ...obj }];
+	return [{ ...obj, public_id_image_: "" }];
 };
 
 module.exports = {
 	key: "asset",
 	noun: "Asset",
 	display: {
-		label: "Storage Monitor",
+		label: "New Storage Event",
 		description:
-			"Triggers when an image is uploaded or deleted, or a new folder is created in PixelBin.io",
+			"Triggers when an image is uploaded, updated or deleted, or a new folder is created in PixelBin.io.",
 	},
 	operation: {
 		inputFields: [
 			{
-				key: "fileCreate",
+				key: "dynamic_dropdown",
+				label: "Select Items",
 				required: true,
-				type: "boolean",
-				label: "Image Upload",
-				helpText: "triggers when image is uploaded in PixelBin.io",
-			},
-			{
-				key: "fileDelete",
-				required: true,
-				type: "boolean",
-				label: "Image Delete",
-				helpText: "triggers when image is deleted from PixelBin.io",
-			},
-			{
-				key: "folderCreate",
-				required: true,
-				type: "boolean",
-				label: "Folder Create",
-				helpText: "triggers when image is deleted from PixelBin.io",
+				type: "string",
+				choices: {
+					fileCreate: "File Create",
+					fileDelete: "File Delete",
+					fileUpdate: "File Update",
+					folderCreate: "Folder Create",
+					folderUpdate: "Folder Update",
+				},
+				list: true,
 			},
 		],
 
 		type: "hook",
-
+		sample: {
+			event: {
+				name: "file",
+				type: "create",
+				traceId: "8f2937c8-92f7-47c3-a8eb-71c50408fa3d",
+			},
+			payload: {
+				orgId: 7216,
+				type: "file",
+				name: "pb_result.png",
+				path: "",
+				fileId: "pb_result.png",
+				access: "public-read",
+				tags: [],
+				metadata: {
+					source: "direct",
+				},
+				format: "png",
+				assetType: "image",
+				size: 538309,
+				width: 2660,
+				height: 1360,
+				context: {
+					steps: [],
+					req: {
+						headers: {},
+						query: {},
+					},
+					meta: {
+						format: "png",
+						size: 538309,
+						width: 2660,
+						height: 1360,
+						space: "srgb",
+						channels: 4,
+						depth: "uchar",
+						density: 144,
+						isProgressive: false,
+						resolutionUnit: "inch",
+						hasProfile: true,
+						hasAlpha: true,
+						extension: "png",
+						contentType: "image/png",
+						assetType: "image",
+						isImageAsset: true,
+						isAudioAsset: false,
+						isVideoAsset: false,
+						isRawAsset: false,
+						isTransformationSupported: true,
+					},
+				},
+				isOriginal: true,
+			},
+			public_id: `https://cdn.pixelbin.io/v2/polished-hat-8f9bd4/original/dummy_image.png`,
+			public_id_image_: "",
+		},
 		performSubscribe: subscribeHook,
 		performUnsubscribe: unsubscribeHook,
 		perform: getDataFromWebHook,

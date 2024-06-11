@@ -128,6 +128,7 @@ const performList = async (z, bundle) => {
 			path: "",
 			isActive: true,
 		},
+		path: "",
 	};
 
 	let defaultPixelBinClient = new PixelbinClient(
@@ -147,6 +148,7 @@ const performList = async (z, bundle) => {
 		if (items.length) {
 			body.payload.id = items[0]._id;
 			body.payload.name = items[0].name;
+			body.path = items[0].path;
 		}
 	} catch (error) {
 		throw error;
@@ -169,13 +171,16 @@ const getDataFromWebHook = async (z, bundle) => {
 
 	const orgDetails =
 		await defaultPixelBinClient.organization.getAppOrgDetails();
+
 	[bundle.cleanedRequest].forEach((obj) => {
 		delete obj.querystring;
 		delete obj.s3Bucket;
 		delete obj.s3Key;
 		deletePropertiesRecursive(obj);
 	});
-	return [{ ...bundle.cleanedRequest }];
+	return [
+		{ ...bundle.cleanedRequest, path: bundle.cleanedRequest.payload.path },
+	];
 };
 
 module.exports = {
@@ -183,13 +188,27 @@ module.exports = {
 
 	noun: "Folder",
 	display: {
-		label: "Create Folder",
-		description: "Triggers when a new folder is created in PixelBin.io",
+		label: "New Folder Create",
+		description: "Triggers when a new folder is created in PixelBin.io.",
 	},
 
 	operation: {
 		inputFields: [],
 		type: "hook",
+		sample: {
+			event: {
+				name: "folder",
+				type: "create",
+				traceId: "c19e8dfc-b94f-4bc5-8725-d3ff361035e1",
+			},
+			payload: {
+				_id: "d8e0394c-2235-422e-bd48-53c4cf1ae0f4",
+				name: "folderName",
+				path: "",
+				isActive: true,
+			},
+			path: "",
+		},
 		performSubscribe: subscribeHook,
 		performUnsubscribe: unsubscribeHook,
 		perform: getDataFromWebHook,
