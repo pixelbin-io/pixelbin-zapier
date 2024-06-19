@@ -1,20 +1,22 @@
 "use strict";
 const zapier = require("zapier-platform-core");
+const { PixelbinConfig, PixelbinClient } = require("@pixelbin/admin");
 
-const test = (z, bundle) => {
+const test = async (z, bundle) => {
 	zapier.tools.env.inject();
-	const url = `${process.env.BASE_URL}/service/platform/organization/v1.0/apps/info`;
-	return z
-		.request({
-			url: url,
+	let defaultPixelBinClient = new PixelbinClient(
+		new PixelbinConfig({
+			domain: `${process.env.BASE_URL}`,
+			apiSecret: bundle.authData.apiKey,
 		})
-		.then((response) => {
-			return response;
-		})
-		.catch((error) => {
-			console.error("Error while testing:", error);
-			throw error;
-		});
+	);
+	try {
+		const orgDetails =
+			await defaultPixelBinClient.organization.getAppOrgDetails();
+		return orgDetails;
+	} catch (err) {
+		throw new Error(`Status: ${err.status} Message: ${err.message}`);
+	}
 };
 
 const handleBadResponses = (response, z, bundle) => {
@@ -376,7 +378,7 @@ module.exports = {
 			},
 		],
 		test,
-		connectionLabel: "{{json.app.name}}",
+		connectionLabel: "{{app.name}}",
 	},
 	befores: [includeApiKey],
 	afters: [handleBadResponses],
