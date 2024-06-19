@@ -1,6 +1,3 @@
-var hookID = "";
-const eventIds = [];
-
 const subscribeHook = async (z, bundle) => {
 	const { v4: uuidv4 } = require("uuid");
 	const zapier = require("zapier-platform-core");
@@ -17,11 +14,11 @@ const subscribeHook = async (z, bundle) => {
 		let response = await z.request(fetchEvents);
 
 		if (response.status === 200) {
-			const temp = [...response.data];
-			const obj = temp.find(
+			const tempResponse = [...response.data];
+			const fileCreateObj = tempResponse.find(
 				(item) => item.name === "folder" && item.type === "create"
 			);
-			eventIds.push(obj._id);
+			eventIds.push(fileCreateObj._id);
 		} else {
 			throw new Error(`Failed to retrieve events. Status: ${response.status}`);
 		}
@@ -49,14 +46,13 @@ const subscribeHook = async (z, bundle) => {
 					body: {
 						events: [...eventIds],
 						isActive: true,
-						name: uuidv4(),
+						name: `(${bundle.meta.zap.id})-${uuidv4()}`,
 						secret: "",
 						url: bundle.targetUrl,
 					},
 				});
 
 				if (webhookConfigResponse.status === 200) {
-					hookID = webhookConfigResponse.data.webhookConfigId;
 					return webhookConfigResponse.data;
 				} else {
 					throw new Error(
@@ -79,9 +75,9 @@ const subscribeHook = async (z, bundle) => {
 const unsubscribeHook = (z, bundle) => {
 	const zapier = require("zapier-platform-core");
 	zapier.tools.env.inject();
-
+	id = bundle.subscribeData.webhookConfigId;
 	const options = {
-		url: `${process.env.BASE_URL}/service/platform/notification/v1.0/webhook-configs/${hookID}`,
+		url: `${process.env.BASE_URL}/service/platform/notification/v1.0/webhook-configs/${id}`,
 		method: "DELETE",
 	};
 	return z

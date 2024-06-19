@@ -1,13 +1,8 @@
-var hookID = "";
-const eventIds = [];
-
 const subscribeHook = async (z, bundle) => {
 	const { v4: uuidv4 } = require("uuid");
 	const zapier = require("zapier-platform-core");
 	zapier.tools.env.inject();
 	const eventIds = [];
-
-	console.log("BUNDLEDATAZZZZZZZ", z, "BUNDLEDATA", bundle);
 
 	const fetchEvents = {
 		url: `${process.env.BASE_URL}/service/platform/notification/v1.0/events`,
@@ -76,7 +71,7 @@ const subscribeHook = async (z, bundle) => {
 					body: {
 						events: [...eventIds],
 						isActive: true,
-						name: uuidv4(),
+						name: `(${bundle.meta.zap.id})-${uuidv4()}`,
 						secret: "",
 						url: bundle.targetUrl,
 					},
@@ -132,8 +127,9 @@ const getDynamicDropdownChoices = async (z, bundle) => {
 const unsubscribeHook = (z, bundle) => {
 	const zapier = require("zapier-platform-core");
 	zapier.tools.env.inject();
+	id = bundle.subscribeData.webhookConfigId;
 	const options = {
-		url: `${process.env.BASE_URL}/service/platform/notification/v1.0/webhook-configs/${hookID}`,
+		url: `${process.env.BASE_URL}/service/platform/notification/v1.0/webhook-configs/${id}`,
 		method: "DELETE",
 	};
 	return z

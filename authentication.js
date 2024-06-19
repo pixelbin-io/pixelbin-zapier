@@ -372,7 +372,7 @@ module.exports = {
 				required: true,
 				type: "password",
 				helpText:
-					"1. Visit the [console.pixelbin.io](https://console.pixelbin.io/choose-org?redirectTo=settings/apps) to create a free account (email confirmation required) \n2. For integration, obtain your API Token. Learn about it [here](https://www.pixelbinz0.de/docs/tokens/) and access your API Token [directly](https://console.pixelbin.io/choose-org?redirectTo=settings/apps)",
+					"1. Visit the [console.pixelbin.io](https://console.pixelbin.io/choose-org?redirectTo=settings/apps) to create a free account (email confirmation required) \n2. For integration, obtain your API Token. Learn about it [here](https://www.pixelbin.io/docs/tokens/) and access your API Token [directly](https://console.pixelbin.io/choose-org?redirectTo=settings/apps)",
 			},
 		],
 		test,

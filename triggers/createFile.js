@@ -1,32 +1,8 @@
-var hookID = "";
-const eventIds = [];
-
 const subscribeHook = async (z, bundle) => {
-	const { PixelbinConfig, PixelbinClient } = require("@pixelbin/admin");
 	const { v4: uuidv4 } = require("uuid");
 	const zapier = require("zapier-platform-core");
 	zapier.tools.env.inject();
 	const eventIds = [];
-
-	let defaultPixelBinClient = new PixelbinClient(
-		new PixelbinConfig({
-			domain: `${process.env.BASE_URL}`,
-			apiSecret: bundle.authData.apiKey,
-		})
-	);
-
-	try {
-		let temp = await defaultPixelBinClient.assets.listFilesPaginator({
-			onlyFiles: true,
-			path: "",
-		});
-		const { items, page } = await temp.next();
-		if (items.length) {
-			console.log("PICKED_UP_ITEM_FILES", items[0]);
-		}
-	} catch (error) {
-		throw error;
-	}
 
 	const fetchEvents = {
 		url: `${process.env.BASE_URL}/service/platform/notification/v1.0/events`,
@@ -37,12 +13,12 @@ const subscribeHook = async (z, bundle) => {
 		let response = await z.request(fetchEvents);
 
 		if (response.status === 200) {
-			const temp = [...response.data];
+			const tempResponse = [...response.data];
 
-			const obj = temp.find(
+			const fileCreateObj = tempResponse.find(
 				(item) => item.name === "file" && item.type === "create"
 			);
-			eventIds.push(obj._id);
+			eventIds.push(fileCreateObj._id);
 		} else {
 			throw new Error(`Failed to retrieve events. Status: ${response.status}`);
 		}
@@ -70,14 +46,13 @@ const subscribeHook = async (z, bundle) => {
 					body: {
 						events: [...eventIds],
 						isActive: true,
-						name: uuidv4(),
+						name: `(${bundle.meta.zap.id})-${uuidv4()}`,
 						secret: "",
 						url: bundle.targetUrl,
 					},
 				});
 
 				if (webhookConfigResponse.status === 200) {
-					hookID = webhookConfigResponse.data.webhookConfigId;
 					return webhookConfigResponse.data;
 				} else {
 					throw new Error(
@@ -195,8 +170,10 @@ const unsubscribeHook = (z, bundle, retries = 4) => {
 	const zapier = require("zapier-platform-core");
 	zapier.tools.env.inject();
 
+	id = bundle.subscribeData.webhookConfigId;
+
 	const options = {
-		url: `${process.env.BASE_URL}/service/platform/notification/v1.0/webhook-configs/${hookID}`,
+		url: `${process.env.BASE_URL}/service/platform/notification/v1.0/webhook-configs/${id}`,
 		method: "DELETE",
 	};
 
