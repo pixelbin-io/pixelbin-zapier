@@ -1,56 +1,16 @@
 const subscribeHook = async (z, bundle) => {
 	const { v4: uuidv4 } = require("uuid");
+	const Util = require("../utils");
 	const zapier = require("zapier-platform-core");
 	zapier.tools.env.inject();
-	const eventIds = [];
 
-	const fetchEvents = {
-		url: `${process.env.BASE_URL}/service/platform/notification/v1.0/events`,
-		method: "GET",
-	};
-
-	try {
-		let response = await z.request(fetchEvents);
-
-		if (response.status === 200) {
-			const temp = [...response.data];
-			if (bundle.inputData.dynamic_dropdown.includes("fileCreate")) {
-				const obj = temp.find(
-					(item) => item.name === "file" && item.type === "create"
-				);
-				eventIds.push(obj._id);
-			}
-			if (bundle.inputData.dynamic_dropdown.includes("fileDelete")) {
-				const obj = temp.find(
-					(item) => item.name === "file" && item.type === "delete"
-				);
-				eventIds.push(obj._id);
-			}
-			if (bundle.inputData.dynamic_dropdown.includes("fileUpdate")) {
-				const obj = temp.find(
-					(item) => item.name === "file" && item.type === "update"
-				);
-				eventIds.push(obj._id);
-			}
-			if (bundle.inputData.dynamic_dropdown.includes("folderCreate")) {
-				const obj = temp.find(
-					(item) => item.name === "folder" && item.type === "create"
-				);
-				eventIds.push(obj._id);
-			}
-			if (bundle.inputData.dynamic_dropdown.includes("folderUpdate")) {
-				const obj = temp.find(
-					(item) => item.name === "folder" && item.type === "update"
-				);
-				eventIds.push(obj._id);
-			}
-		} else {
-			throw new Error(`Failed to retrieve events. Status: ${response.status}`);
-		}
-	} catch (error) {
-		z.console.log("Error fetching events: " + error.message);
-		throw error;
-	}
+	const eventIds = await Util.fetchEvents(z, [
+		{ name: "file", type: "create" },
+		{ name: "file", type: "delete" },
+		{ name: "file", type: "update" },
+		{ name: "folder", type: "create" },
+		{ name: "folder", type: "update" },
+	]);
 
 	const testWebHook = {
 		url: `${process.env.BASE_URL}/service/platform/notification/v1.0/webhook-configs/test`,
