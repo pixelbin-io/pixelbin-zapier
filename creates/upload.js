@@ -52,7 +52,7 @@ module.exports = {
 	noun: "File",
 	display: {
 		label: "Upload File to Pixelbin",
-		description: "Uploads an image to Pixelbin.io",
+		description: "Uploads an image to Pixelbin.io and returns url",
 	},
 	operation: {
 		perform,

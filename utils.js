@@ -1,3 +1,4 @@
+const { v4: uuidv4 } = require("uuid");
 const zapier = require("zapier-platform-core");
 zapier.tools.env.inject();
 
@@ -33,6 +34,54 @@ class Util {
 		} catch (error) {
 			console.log("Error fetching events: " + error.message);
 			throw error;
+		}
+	}
+
+	static async createWebhook(z, eventIds, bundleData) {
+		const testWebHook = {
+			url: `${process.env.BASE_URL}/service/platform/notification/v1.0/webhook-configs/test`,
+			method: "POST",
+			body: {
+				url: "https://www.example.com",
+				secret: "",
+			},
+		};
+
+		try {
+			let testHookResponse = await z.request(testWebHook);
+			if (testHookResponse.status === 200) {
+				try {
+					const webhookConfigResponse = await z.request({
+						url: `${process.env.BASE_URL}/service/platform/notification/v1.0/webhook-configs`,
+						method: "POST",
+						body: {
+							events: [...eventIds],
+							isActive: true,
+							name: `(${bundleData.meta.zap.id})-${uuidv4()}`,
+							secret: "",
+							url: bundleData.targetUrl,
+						},
+					});
+
+					if (webhookConfigResponse.status === 200) {
+						return webhookConfigResponse.data;
+					} else {
+						throw new Error(
+							`Status: ${webhookConfigResponse.status} Message: ${webhookConfigResponse.message}`
+						);
+					}
+				} catch (error) {
+					z.console.log(
+						"Error creating webhook configuration: " + error.message
+					);
+					throw error;
+				}
+			}
+		} catch (error) {
+			z.console.log("Error creating test WEBHOOK: " + error.message);
+			throw new Error(
+				`Failed to create a test webhook configuration. Status: ${error}`
+			);
 		}
 	}
 }

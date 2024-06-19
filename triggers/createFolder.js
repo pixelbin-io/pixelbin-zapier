@@ -1,5 +1,4 @@
 const subscribeHook = async (z, bundle) => {
-	const { v4: uuidv4 } = require("uuid");
 	const Util = require("../utils");
 	const zapier = require("zapier-platform-core");
 	zapier.tools.env.inject();
@@ -8,49 +7,7 @@ const subscribeHook = async (z, bundle) => {
 		{ name: "folder", type: "create" },
 	]);
 
-	const testWebHook = {
-		url: `${process.env.BASE_URL}/service/platform/notification/v1.0/webhook-configs/test`,
-		method: "POST",
-		body: {
-			url: "https://www.example.com",
-			secret: "",
-		},
-	};
-
-	try {
-		let testHookResponse = await z.request(testWebHook);
-		if (testHookResponse.status === 200) {
-			try {
-				const webhookConfigResponse = await z.request({
-					url: `${process.env.BASE_URL}/service/platform/notification/v1.0/webhook-configs`,
-					method: "POST",
-					body: {
-						events: [...eventIds],
-						isActive: true,
-						name: `(${bundle.meta.zap.id})-${uuidv4()}`,
-						secret: "",
-						url: bundle.targetUrl,
-					},
-				});
-
-				if (webhookConfigResponse.status === 200) {
-					return webhookConfigResponse.data;
-				} else {
-					throw new Error(
-						`Failed to create webhook configuration. Status: ${webhookConfigResponse.status}`
-					);
-				}
-			} catch (error) {
-				z.console.log("Error creating webhook configuration: " + error.message);
-				throw error;
-			}
-		}
-	} catch (error) {
-		z.console.log("Error creating TEST WEBHOOK: " + error.message);
-		throw new Error(
-			`Failed to create a test webhook configuration. Status: ${error}`
-		);
-	}
+	return await Util.createWebhook(z, eventIds, bundle);
 };
 
 const unsubscribeHook = (z, bundle) => {
@@ -88,6 +45,7 @@ const deletePropertiesRecursive = (obj) => {
 	}
 };
 
+//In the function below, we generate sample data to demonstrate to the user while testing the trigger. Additionally, we fetch some data in real time from Pixelbin to provide the user with a comprehensive view.
 const performList = async (z, bundle) => {
 	const { PixelbinConfig, PixelbinClient } = require("@pixelbin/admin");
 	const zapier = require("zapier-platform-core");
@@ -119,6 +77,7 @@ const performList = async (z, bundle) => {
 		let temp = await defaultPixelBinClient.assets.listFilesPaginator({
 			onlyFolders: true,
 			path: "",
+			pageSize: "1",
 		});
 		const { items, page } = await temp.next();
 
@@ -145,9 +104,6 @@ const getDataFromWebHook = async (z, bundle) => {
 			apiSecret: bundle.authData.apiKey,
 		})
 	);
-
-	const orgDetails =
-		await defaultPixelBinClient.organization.getAppOrgDetails();
 
 	[bundle.cleanedRequest].forEach((obj) => {
 		delete obj.querystring;
