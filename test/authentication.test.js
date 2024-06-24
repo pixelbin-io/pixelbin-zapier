@@ -8,7 +8,7 @@ describe("custom auth", () => {
 	it("passes authentication and returns json", async () => {
 		const bundle = {
 			authData: {
-				apiKey: "9410ee81-fcaa-4532-a18a-8d7bd4e3686c",
+				apiKey: process.env.API_TOKEN,
 			},
 		};
 

@@ -84,6 +84,43 @@ class Util {
 			);
 		}
 	}
+
+	static async deleteWebhook(z, bundle, retries = 4) {
+		const zapier = require("zapier-platform-core");
+		zapier.tools.env.inject();
+
+		id = bundle.subscribeData.webhookConfigId;
+
+		const options = {
+			url: `${process.env.BASE_URL}/service/platform/notification/v1.0/webhook-configs/${id}`,
+			method: "DELETE",
+		};
+
+		return z
+			.request(options)
+			.then((response) => {
+				if (response.status === 200) {
+					return response.data;
+				} else {
+					if (retries > 0) {
+						return unsubscribeHook(z, bundle, retries - 1);
+					} else {
+						throw new Error(
+							`Failed to delete after 5 attempts: ${error.message}`
+						);
+					}
+				}
+			})
+			.catch((error) => {
+				if (retries > 0) {
+					return unsubscribeHook(z, bundle, retries - 1);
+				} else {
+					throw new Error(
+						`Failed to delete after 5 attempts: ${error.message}`
+					);
+				}
+			});
+	}
 }
 
 module.exports = Util;

@@ -9,10 +9,11 @@ const appTester = zapier.createAppTester(App);
 
 describe("triggers", () => {
 	describe("web hook trigger", () => {
+		zapier.tools.env.inject();
 		it("should create a new webhook", async () => {
 			const bundle = {
 				authData: {
-					apiKey: "9410ee81-fcaa-4532-a18a-8d7bd4e3686c",
+					apiKey: process.env.API_TOKEN,
 				},
 				targetUrl: "https://github.com/zapier/zapier-platform-cli",
 			};
@@ -28,7 +29,7 @@ describe("triggers", () => {
 		it("should delete webhook", async () => {
 			const bundle = {
 				authData: {
-					apiKey: "9410ee81-fcaa-4532-a18a-8d7bd4e3686c",
+					apiKey: process.env.API_TOKEN,
 				},
 			};
 
