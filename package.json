@@ -1,13 +1,13 @@
 {
 	"name": "Pixelbin Zapier Integration",
-	"version": "1.0.1",
+	"version": "1.0.3",
 	"description": "",
 	"main": "index.js",
 	"scripts": {
 		"test": "jest --testTimeout 10000"
 	},
 	"dependencies": {
-		"@pixelbin/admin": "^4.0.2",
+		"@pixelbin/admin": "^4.0.3",
 		"@pixelbin/core": "^6.0.0",
 		"crypto-js": "^4.2.0",
 		"uuid": "^9.0.1",
