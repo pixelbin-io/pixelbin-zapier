@@ -15,6 +15,7 @@ const performList = async (z, bundle) => {
 	const { PixelbinConfig, PixelbinClient } = require("@pixelbin/admin");
 	const zapier = require("zapier-platform-core");
 	zapier.tools.env.inject();
+	const INTEGRATION_PLATFORM = require("../constants");
 
 	body = {
 		event: {
@@ -76,6 +77,7 @@ const performList = async (z, bundle) => {
 		new PixelbinConfig({
 			domain: `${process.env.BASE_URL}`,
 			apiSecret: bundle.authData.apiKey,
+			integrationPlatform: INTEGRATION_PLATFORM,
 		})
 	);
 	let temp = await defaultPixelBinClient.assets.listFilesPaginator({
@@ -157,11 +159,13 @@ const getDataFromWebHook = async (z, bundle) => {
 	const { PixelbinConfig, PixelbinClient } = require("@pixelbin/admin");
 	const zapier = require("zapier-platform-core");
 	zapier.tools.env.inject();
+	const INTEGRATION_PLATFORM = require("../constants");
 
 	let defaultPixelBinClient = new PixelbinClient(
 		new PixelbinConfig({
 			domain: `${process.env.BASE_URL}`,
 			apiSecret: bundle.authData.apiKey,
+			integrationPlatform: INTEGRATION_PLATFORM,
 		})
 	);
 

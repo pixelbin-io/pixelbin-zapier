@@ -1,6 +1,7 @@
 "use strict";
 const zapier = require("zapier-platform-core");
 const { PixelbinConfig, PixelbinClient } = require("@pixelbin/admin");
+const INTEGRATION_PLATFORM = require("./constants");
 
 const test = async (z, bundle) => {
 	zapier.tools.env.inject();
@@ -8,6 +9,7 @@ const test = async (z, bundle) => {
 		new PixelbinConfig({
 			domain: `${process.env.BASE_URL}`,
 			apiSecret: bundle.authData.apiKey,
+			integrationPlatform: INTEGRATION_PLATFORM,
 		})
 	);
 	try {

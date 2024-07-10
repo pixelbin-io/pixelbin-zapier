@@ -1,11 +1,14 @@
 const { PixelbinConfig, PixelbinClient } = require("@pixelbin/admin");
 const zapier = require("zapier-platform-core");
+const INTEGRATION_PLATFORM = require("../constants");
+
 const createReport = async (z, bundle) => {
 	zapier.tools.env.inject();
 	let defaultPixelBinClient = new PixelbinClient(
 		new PixelbinConfig({
 			domain: `${process.env.BASE_URL}`,
 			apiSecret: bundle.authData.apiKey,
+			integrationPlatform: INTEGRATION_PLATFORM,
 		})
 	);
 
