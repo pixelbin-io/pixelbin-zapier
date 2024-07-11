@@ -88,7 +88,7 @@ module.exports = {
 				required: true,
 				type: "string",
 				helpText:
-					"Transformations to be applied as per given string e.g t.resize(w:128,h:128)\n.You can visit [Here](https://www.pixelbin.io/docs/transformations/) to see all available options for transformations. ",
+					"[Here](https://www.pixelbin.io/docs/integrations/zapier/supported-transformations/) you can see all available options for transformations.",
 			},
 			{
 				key: "tags",
